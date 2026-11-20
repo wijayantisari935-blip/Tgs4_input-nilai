@@ -2,26 +2,32 @@ name: Build EXE Tugas 4
 
 on:
   push:
-    branches: [ "main" ]
+    branches: ["main"]
   pull_request:
-    branches: [ "main" ]
+    branches: ["main"]
 
 jobs:
   build:
     runs-on: windows-latest
 
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v4
+      - name: Checkout Repository
+        uses: actions/checkout@v4
 
-    - name: Setup MSVC (Compiler)
-      uses: microsoft/setup-msbuild@v2
+      - name: Setup MSYS2
+        uses: msys2/setup-msys2@v2
+        with:
+          msystem: MINGW64
+          update: true
+          install: mingw-w64-x86_64-gcc
 
-    - name: Compile C++ to EXE
-      run: g++ nilai.cpp -o program_nilai.exe
+      - name: Compile C++ to EXE
+        shell: msys2 {0}
+        run: |
+          g++ nilai.cpp -o program_nilai.exe -static -static-libgcc -static-libstdc++
 
-    - name: Upload EXE as Artifact
-      uses: actions/upload-artifact@v4
-      with:
-        name: program-nilai-exe
-        path: program_nilai.exe
+      - name: Upload EXE as Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: program-nilai-exe
+          path: program_nilai.exe
